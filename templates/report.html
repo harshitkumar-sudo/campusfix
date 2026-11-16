@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Report an Issue | CampusFix{% endblock %}
+
+{% block content %}
+<div class="container container-narrow">
+  <div class="page-head">
+    <div class="eyebrow">Student Module</div>
+    <h1>Report an Issue</h1>
+    <div class="gradient-line"></div>
+    <p>Tell us what is broken and where. It takes less than a minute.</p>
+  </div>
+
+  <div class="section">
+    <div class="card" id="form-card">
+      <div class="alert alert-info">Reporting as <strong>{{ current_student.name }}</strong> ({{ current_student.roll_no }}). Your name is visible only to administrators.</div>
+      <div class="loading-row" id="meta-loading"><span class="spinner"></span> Loading form&hellip;</div>
+      <div class="alert alert-error" id="form-error" role="alert" hidden></div>
+
+      <form id="report-form" novalidate hidden>
+        <div class="field">
+          <label class="label" for="category">Issue category</label>
+          <select class="input" id="category" name="category" required>
+            <option value="">Select a category</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label class="label" for="wing">Wing</label>
+            <select class="input" id="wing" name="wing" required>
+              <option value="">Select a wing</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label" for="room">Room</label>
+            <select class="input" id="room" name="room" required disabled>
+              <option value="">Select a wing first</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="description">Problem description</label>
+          <textarea class="input" id="description" name="description" maxlength="1000" placeholder="e.g. Projector shows no display even though the laptop is connected." required></textarea>
+          <div class="char-count"><span id="desc-count">0</span> / 1000</div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="photo">Photo <span class="opt">(optional, PNG or JPG, max 5MB)</span></label>
+          <input class="input" type="file" id="photo" name="photo" accept="image/png,image/jpeg">
+          <div class="photo-preview" id="photo-preview-wrap" hidden>
+            <img id="photo-preview" alt="Selected photo preview">
+            <button class="btn btn-sm" type="button" id="photo-remove">Remove</button>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-block" type="submit" id="submit-btn">Submit Complaint</button>
+      </form>
+    </div>
+
+    <div class="card success-card" id="success-card" hidden>
+      <div class="success-icon" aria-hidden="true">&#10003;</div>
+      <h2>Complaint submitted!</h2>
+      <p class="muted">Save your ticket ID to track progress anytime.</p>
+      <div class="success-id gradient-text" id="success-ticket-id">CF-0000</div>
+      <div class="success-actions">
+        <button class="btn" type="button" id="copy-btn">Copy ID</button>
+        <a class="btn btn-primary" id="track-link" href="/track">Track this ticket</a>
+        <button class="btn" type="button" id="again-btn">Report another issue</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/report.js') }}"></script>
+{% endblock %}

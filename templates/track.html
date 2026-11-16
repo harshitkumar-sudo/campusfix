@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Track a Ticket | CampusFix{% endblock %}
+
+{% block content %}
+<div class="container container-narrow">
+  <div class="page-head">
+    <div class="eyebrow">Student Module</div>
+    <h1>Track a Ticket</h1>
+    <div class="gradient-line"></div>
+    <p>Enter your ticket ID to see where your complaint stands.</p>
+  </div>
+
+  <div class="section">
+    <div class="card">
+      <form class="inline-form" id="track-form" novalidate style="margin-top:0">
+        <label class="sr-only" for="ticket-input">Ticket ID</label>
+        <input class="input" id="ticket-input" name="id" type="text" placeholder="e.g. CF-1042" autocomplete="off" autocapitalize="characters">
+        <button class="btn btn-primary" type="submit" id="track-btn">Track</button>
+      </form>
+    </div>
+
+    <div class="loading-row" id="track-loading" hidden><span class="spinner"></span> Looking up your ticket&hellip;</div>
+
+    <div class="alert alert-error mt-2" id="track-error" role="alert" hidden></div>
+
+    <div class="card empty-state mt-2" id="not-found" hidden>
+      <div class="emoji" aria-hidden="true">&#128269;</div>
+      <h3>We couldn't find that ticket</h3>
+      <p class="muted">Please check the ID (it looks like <strong>CF-1042</strong>) and try again.</p>
+    </div>
+
+    <div id="result" hidden>
+      <div class="card mt-2">
+        <div class="result-head">
+          <div>
+            <div class="eyebrow">Ticket</div>
+            <h2 id="r-id">CF-0000</h2>
+          </div>
+          <div class="pill-row">
+            <span id="r-status" class="badge"></span>
+            <span id="r-urgency" class="urg-medium"></span>
+          </div>
+        </div>
+
+        <dl class="details-grid">
+          <div class="detail-item"><dt>Category</dt><dd id="r-category"></dd></div>
+          <div class="detail-item"><dt>Location</dt><dd id="r-location"></dd></div>
+          <div class="detail-item"><dt>Assigned to</dt><dd id="r-assigned"></dd></div>
+          <div class="detail-item"><dt>Upvotes</dt><dd id="r-upvotes"></dd></div>
+          <div class="detail-item"><dt>Submitted</dt><dd id="r-created"></dd></div>
+          <div class="detail-item"><dt>Last updated</dt><dd id="r-updated"></dd></div>
+        </dl>
+
+        <div class="detail-desc" id="r-desc"></div>
+        <div class="ticket-photo" id="r-photo-wrap" hidden>
+          <a id="r-photo-link" href="#" target="_blank" rel="noopener"><img id="r-photo" alt="Photo attached to this ticket"></a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Progress</div>
+        <div class="stepper" id="stepper"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">History</div>
+        <ul class="timeline" id="timeline"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/track.js') }}"></script>
+{% endblock %}

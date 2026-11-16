@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Create Account | CampusFix{% endblock %}
+
+{% block content %}
+<div class="container container-narrow">
+  <div class="auth-wrap">
+    <div class="card auth-card">
+      <div class="eyebrow">Student Portal</div>
+      <h1 class="auth-title">Create account</h1>
+      <div class="gradient-line"></div>
+      <p class="muted">Register once, then report issues and upvote problems that affect you too.</p>
+
+      <div class="alert alert-error mt-2" id="auth-error" role="alert" hidden></div>
+
+      <form id="register-form" class="mt-2" novalidate>
+        <div class="field">
+          <label class="label" for="name">Full name</label>
+          <input class="input" id="name" name="name" type="text" autocomplete="name" maxlength="60" required>
+        </div>
+        <div class="field">
+          <label class="label" for="roll_no">Roll number</label>
+          <input class="input" id="roll_no" name="roll_no" type="text" autocomplete="username" autocapitalize="characters" maxlength="20" required>
+          <div class="hint">3 to 20 letters or numbers. This is your login ID.</div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label class="label" for="password">Password</label>
+            <input class="input" id="password" name="password" type="password" autocomplete="new-password" minlength="6" required>
+          </div>
+          <div class="field">
+            <label class="label" for="password2">Confirm password</label>
+            <input class="input" id="password2" name="password2" type="password" autocomplete="new-password" required>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block" type="submit" id="auth-btn">Create account</button>
+      </form>
+
+      <p class="center mt-2">Already registered? <a href="/login">Sign in</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

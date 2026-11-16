@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}CampusFix | From Report to Resolution{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/feed.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <div class="eyebrow">Student Experience &amp; Smart Education</div>
+    <h1>From Report to <span class="gradient-text">Resolution.</span></h1>
+    <p class="lead">CampusFix connects students with campus maintenance through one structured, transparent and trackable workflow. No more WhatsApp chats, paper logs or unanswered office visits.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="/report">Report an Issue</a>
+      <a class="btn" href="/track">Track a Ticket</a>
+    </div>
+    <span class="ticket-chip">Sample Ticket ID: #CF-1042</span>
+  </div>
+</section>
+
+<section class="section" id="feed">
+  <div class="container">
+    <div class="eyebrow">Live from campus</div>
+    <h2>Reported Issues</h2>
+    <div class="gradient-line"></div>
+    <p class="muted">See what others have reported. Upvote problems that affect you too: an issue with <strong>10 upvotes</strong> automatically becomes <strong>Critical</strong> priority.</p>
+
+    <div class="feed-controls">
+      <div class="tabs" id="feed-tabs" role="group" aria-label="Sort complaints">
+        <button class="tab active" type="button" data-mode="top">Most upvoted</button>
+        <button class="tab" type="button" data-mode="new">Newest</button>
+        <button class="tab" type="button" data-mode="mine">My complaints</button>
+      </div>
+      <div class="feed-filters">
+        <label class="sr-only" for="feed-status">Status</label>
+        <select class="input" id="feed-status">
+          <option value="open">Open issues</option>
+          <option value="resolved">Resolved</option>
+          <option value="all">All</option>
+        </select>
+        <label class="sr-only" for="feed-category">Category</label>
+        <select class="input" id="feed-category"><option value="">All categories</option></select>
+      </div>
+    </div>
+
+    <div class="alert alert-error" id="feed-error" role="alert" hidden></div>
+    <div class="loading-row" id="feed-loading"><span class="spinner"></span> Loading issues&hellip;</div>
+    <div class="card empty-state" id="feed-empty" hidden>
+      <div class="emoji" aria-hidden="true">&#128237;</div>
+      <h3 id="feed-empty-title">No issues to show</h3>
+      <p class="muted" id="feed-empty-text">Be the first to report a problem.</p>
+      <a class="btn btn-primary mt-2" href="/report">Report an Issue</a>
+    </div>
+    <div class="feed-grid" id="feed-list"></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="eyebrow">System Overview</div>
+    <h2>How it works</h2>
+    <div class="gradient-line"></div>
+    <div class="steps">
+      <div class="card step-card">
+        <div class="step-num">01</div>
+        <h3>Student</h3>
+        <p>Submits a complaint via the simple web portal.</p>
+      </div>
+      <div class="card step-card">
+        <div class="step-num">02</div>
+        <h3>CampusFix</h3>
+        <p>Generates a unique ticket and routes the data.</p>
+      </div>
+      <div class="card step-card">
+        <div class="step-num">03</div>
+        <h3>Admin Portal</h3>
+        <p>Reviews, prioritizes and assigns tasks.</p>
+      </div>
+      <div class="card step-card">
+        <div class="step-num">04</div>
+        <h3>Resolution</h3>
+        <p>Status is updated to Resolved, live.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container grid-2">
+    <div class="card">
+      <h3>Student Transparency</h3>
+      <p class="muted">Auto-generated ticket IDs let you track progress in real time, without repeated in-person visits.</p>
+    </div>
+    <div class="card">
+      <h3>Operational Clarity</h3>
+      <p class="muted">Administrators use one dashboard to triage requests, spot recurring defects and coordinate fixes efficiently.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container container-narrow">
+    <div class="card">
+      <h3>Already reported an issue?</h3>
+      <p class="muted">Enter your ticket ID to see its live status.</p>
+      <form class="inline-form" action="/track" method="get">
+        <label class="sr-only" for="quick-id">Ticket ID</label>
+        <input class="input" id="quick-id" name="id" type="text" placeholder="e.g. CF-1042" autocomplete="off" required>
+        <button class="btn btn-primary" type="submit">Track</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

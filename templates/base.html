@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1220">
+  <title>{% block title %}CampusFix{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  {% set path = request.path %}
+  <header class="site-header">
+    <div class="container nav-inner">
+      <a class="brand" href="{{ '/' if current_student else '/login' }}" aria-label="CampusFix home">
+        <img class="brand-logo" src="{{ url_for('static', filename='img/logo.png') }}" alt="" onerror="this.style.display='none'">
+        <span>Campus<em>Fix</em></span>
+      </a>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
+      <ul class="nav-links" id="nav-links">
+        {% if current_student %}
+        <li><a href="/" class="{{ 'active' if path == '/' else '' }}">Home</a></li>
+        <li><a href="/report" class="{{ 'active' if path.startswith('/report') else '' }}">Report</a></li>
+        <li><a href="/track" class="{{ 'active' if path.startswith('/track') else '' }}">Track</a></li>
+        {% endif %}
+        <li><a href="/admin" class="{{ 'active' if path.startswith('/admin') else '' }}">Admin</a></li>
+        {% if current_student %}
+        <li class="nav-user">
+          <span class="nav-hello">Hi, {{ current_student.name.split(' ')[0] }}</span>
+          <button class="btn btn-sm" type="button" id="student-logout">Logout</button>
+        </li>
+        {% elif not is_admin %}
+        <li><a href="/login" class="{{ 'active' if path.startswith('/login') else '' }}">Login</a></li>
+        <li><a href="/register" class="{{ 'active' if path.startswith('/register') else '' }}">Register</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span>CampusFix &middot; From Report to Resolution.</span>
+      <span>Aarambhthon prototype &middot; synthetic data only</span>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var out = document.getElementById('student-logout');
+      if (out) {
+        out.addEventListener('click', function () {
+          fetch('/api/student/logout', { method: 'POST' })
+            .then(function () { window.location.href = '/login'; })
+            .catch(function () { window.location.href = '/login'; });
+        });
+      }
+      var btn = document.getElementById('nav-toggle');
+      var links = document.getElementById('nav-links');
+      if (!btn || !links) return;
+      btn.addEventListener('click', function () {
+        var open = links.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    })();
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

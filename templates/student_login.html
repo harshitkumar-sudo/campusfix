@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Student Login | CampusFix{% endblock %}
+
+{% block content %}
+<div class="container container-narrow">
+  <div class="auth-wrap">
+    <div class="card auth-card">
+      <div class="eyebrow">Student Portal</div>
+      <h1 class="auth-title">Sign in</h1>
+      <div class="gradient-line"></div>
+      <p class="muted">Sign in with your roll number to report and track campus issues.</p>
+
+      <div class="alert alert-error mt-2" id="auth-error" role="alert" hidden></div>
+
+      <form id="student-login-form" class="mt-2" novalidate>
+        <div class="field">
+          <label class="label" for="roll_no">Roll number</label>
+          <input class="input" id="roll_no" name="roll_no" type="text" autocomplete="username" autocapitalize="characters" required>
+        </div>
+        <div class="field">
+          <label class="label" for="password">Password</label>
+          <input class="input" id="password" name="password" type="password" autocomplete="current-password" required>
+        </div>
+        <button class="btn btn-primary btn-block" type="submit" id="auth-btn">Sign in</button>
+      </form>
+
+      <p class="center mt-2">New here? <a href="/register">Create an account</a></p>
+      <p class="hint center mt-1">Demo student: <strong>STU1001</strong> / <strong>student123</strong></p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}
