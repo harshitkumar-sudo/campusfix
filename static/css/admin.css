@@ -93,3 +93,35 @@ button.stat-card.active { border-color: var(--teal); background: rgba(26, 211, 1
 .toast-success { border-color: rgba(34, 197, 94, 0.5); color: #bbf7d0; }
 .toast-error { border-color: rgba(239, 68, 68, 0.5); color: #fecaca; }
 @keyframes cf-toast { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ======================================================================
+   Tabs, verification, staff management, chat moderation
+   ====================================================================== */
+.admin-tabs { margin: 4px 0 20px; max-width: 100%; overflow-x: auto; }
+.admin-tabs .tab { white-space: nowrap; }
+.tab-count { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; margin-left: 4px; border-radius: 999px; background: var(--danger); color: #fff; font-size: 0.72rem; font-weight: 800; }
+.panel-intro { margin-bottom: 16px; }
+.panel-intro h2 { font-size: 1.4rem; }
+
+.verify-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+@media (max-width: 900px) { .verify-grid { grid-template-columns: 1fr; } }
+.verify-card { box-shadow: none; display: flex; flex-direction: column; gap: 8px; }
+.verify-meta { font-size: 0.82rem; }
+.verify-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.verify-actions .btn-primary { flex: 1 1 200px; }
+.proof-badge { margin-left: 6px; font-size: 0.7rem; }
+
+.td-strong { font-weight: 700; }
+.staff-table td:last-child { text-align: right; width: 1%; white-space: nowrap; }
+.staff-table tbody tr, #ban-body tr { cursor: default; }
+.staff-table tbody tr:hover, #ban-body tr:hover { background: transparent; }
+
+.mod-card { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; box-shadow: none; }
+.mod-card .card-title { margin-bottom: 8px; }
+.mod-status { font-weight: 700; font-size: 1.05rem; }
+.mod-status.is-live { color: var(--ok); }
+.mod-status.is-paused { color: var(--warn); }
+.ban-form { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
+.ban-form .field { margin-bottom: 0; flex: 1 1 180px; }
+.ban-form .btn { margin-bottom: 0; height: 46px; }
+.staff-table .empty-state, .table-card .empty-state { padding: 22px; }

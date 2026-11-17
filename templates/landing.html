@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Welcome | CampusFix{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <div class="eyebrow">Student Experience &amp; Smart Education</div>
+    <h1>Welcome to <span class="gradient-text">CampusFix</span></h1>
+    <p class="lead">Report campus issues, follow every fix and keep maintenance accountable. Choose how you want to continue.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="entry-grid">
+      <a class="card entry-card" href="/login">
+        <div class="entry-icon" aria-hidden="true">&#127891;</div>
+        <h3>Student Login</h3>
+        <p>Report issues, track tickets and upvote problems that affect you.</p>
+        <span class="entry-cta">Sign in &rarr;</span>
+      </a>
+      <a class="card entry-card" href="/staff/login">
+        <div class="entry-icon" aria-hidden="true">&#128736;&#65039;</div>
+        <h3>Staff Login</h3>
+        <p>See the tasks assigned to you and upload proof once the fix is done.</p>
+        <span class="entry-cta">Sign in &rarr;</span>
+      </a>
+      <a class="card entry-card" href="/admin/login">
+        <div class="entry-icon" aria-hidden="true">&#128737;&#65039;</div>
+        <h3>Admin Login</h3>
+        <p>Triage complaints, assign staff, verify fixes and export reports.</p>
+        <span class="entry-cta">Sign in &rarr;</span>
+      </a>
+      <a class="card entry-card entry-card-accent" href="/register">
+        <div class="entry-icon" aria-hidden="true">&#9997;&#65039;</div>
+        <h3>Register Yourself</h3>
+        <p>New student? Create your account in under a minute.</p>
+        <span class="entry-cta">Create account &rarr;</span>
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

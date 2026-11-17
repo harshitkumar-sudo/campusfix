@@ -102,8 +102,13 @@
     $('r-updated').textContent = fmt(t.updated_at);
     $('r-desc').textContent = t.description;
 
+    var cmp = $('r-compare');
+    cmp.innerHTML = '';
+    var cmpNode = window.CFCompare ? window.CFCompare.build(t) : null;
+    if (cmpNode) { cmp.appendChild(cmpNode); cmp.hidden = false; } else { cmp.hidden = true; }
+
     var wrap = $('r-photo-wrap');
-    if (t.photo_url) {
+    if (t.photo_url && !cmpNode) {
       $('r-photo').src = t.photo_url;
       $('r-photo-link').href = t.photo_url;
       wrap.hidden = false;

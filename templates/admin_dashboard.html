@@ -11,88 +11,197 @@
       <div class="gradient-line"></div>
     </div>
     <div class="admin-actions">
+      <a class="btn btn-sm btn-primary" id="export-btn" href="/api/admin/export.csv" download>Export Report (CSV)</a>
       <button class="btn btn-sm" type="button" id="refresh-btn">Refresh</button>
-      <button class="btn btn-sm btn-danger" type="button" id="logout-btn">Logout</button>
+      <button class="btn btn-sm btn-danger" type="button" id="logout-btn-admin">Logout</button>
     </div>
   </div>
 
   <div class="alert alert-error" id="dash-error" role="alert" hidden></div>
 
-  <!-- Stat cards -->
-  <div class="stat-grid">
-    <button class="card stat-card" type="button" data-status="" title="Show all tickets">
-      <span class="stat-label">Total</span><span class="stat-value" id="st-total">&ndash;</span>
-    </button>
-    <div class="card stat-card stat-static">
-      <span class="stat-label">Pending</span><span class="stat-value gradient-text" id="st-pending">&ndash;</span>
-    </div>
-    <button class="card stat-card" type="button" data-status="Submitted" title="Filter: Submitted">
-      <span class="stat-label">Submitted</span><span class="stat-value" id="st-submitted">&ndash;</span>
-    </button>
-    <button class="card stat-card" type="button" data-status="Under Review" title="Filter: Under Review">
-      <span class="stat-label">Under Review</span><span class="stat-value" id="st-review">&ndash;</span>
-    </button>
-    <button class="card stat-card" type="button" data-status="In Progress" title="Filter: In Progress">
-      <span class="stat-label">In Progress</span><span class="stat-value" id="st-progress">&ndash;</span>
-    </button>
-    <button class="card stat-card" type="button" data-status="Resolved" title="Filter: Resolved">
-      <span class="stat-label">Resolved</span><span class="stat-value" id="st-resolved">&ndash;</span>
-    </button>
+  <div class="tabs admin-tabs" id="admin-tabs" role="tablist" aria-label="Dashboard sections">
+    <button class="tab active" type="button" role="tab" data-tab="tickets">Tickets</button>
+    <button class="tab" type="button" role="tab" data-tab="verify">Verification <span class="tab-count" id="verify-count" hidden>0</span></button>
+    <button class="tab" type="button" role="tab" data-tab="staff">Manage Staff</button>
+    <button class="tab" type="button" role="tab" data-tab="chat">Chat Moderation</button>
   </div>
 
-  <!-- Breakdown panels -->
-  <div class="panel-grid">
+  <!-- ============ TAB: Tickets ============ -->
+  <div id="panel-tickets" data-panel="tickets">
+    <div class="stat-grid">
+      <button class="card stat-card" type="button" data-status="" title="Show all tickets">
+        <span class="stat-label">Total</span><span class="stat-value" id="st-total">&ndash;</span>
+      </button>
+      <div class="card stat-card stat-static">
+        <span class="stat-label">Pending</span><span class="stat-value gradient-text" id="st-pending">&ndash;</span>
+      </div>
+      <button class="card stat-card" type="button" data-status="Submitted" title="Filter: Submitted">
+        <span class="stat-label">Submitted</span><span class="stat-value" id="st-submitted">&ndash;</span>
+      </button>
+      <button class="card stat-card" type="button" data-status="Under Review" title="Filter: Under Review">
+        <span class="stat-label">Under Review</span><span class="stat-value" id="st-review">&ndash;</span>
+      </button>
+      <button class="card stat-card" type="button" data-status="In Progress" title="Filter: In Progress">
+        <span class="stat-label">In Progress</span><span class="stat-value" id="st-progress">&ndash;</span>
+      </button>
+      <button class="card stat-card" type="button" data-status="Resolved" title="Filter: Resolved">
+        <span class="stat-label">Resolved</span><span class="stat-value" id="st-resolved">&ndash;</span>
+      </button>
+    </div>
+
+    <div class="panel-grid">
+      <div class="card">
+        <div class="card-title">Category breakdown</div>
+        <div id="cat-bars" class="bars"></div>
+        <div class="urg-summary" id="urg-summary"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Recurring locations</div>
+        <ol class="hotspot-list" id="hotspots"></ol>
+      </div>
+    </div>
+
+    <div class="card filters">
+      <div class="filter-search">
+        <label class="sr-only" for="f-q">Search tickets</label>
+        <input class="input" id="f-q" type="search" placeholder="Search ID, room, description, staff, reporter&hellip;" autocomplete="off">
+      </div>
+      <div class="filter-selects">
+        <label class="sr-only" for="f-status">Status</label>
+        <select class="input" id="f-status"></select>
+        <label class="sr-only" for="f-urgency">Urgency</label>
+        <select class="input" id="f-urgency"></select>
+        <label class="sr-only" for="f-category">Category</label>
+        <select class="input" id="f-category"></select>
+      </div>
+      <div class="filter-buttons">
+        <button class="btn btn-sm" type="button" id="crit-btn">Critical Priority</button>
+        <button class="btn btn-sm" type="button" id="clear-btn">Clear</button>
+      </div>
+    </div>
+
+    <div class="flex-between list-meta">
+      <div class="muted" id="list-count">Loading&hellip;</div>
+    </div>
+    <div class="loading-row" id="tickets-loading"><span class="spinner"></span> Loading tickets&hellip;</div>
+    <div class="card empty-state" id="tickets-empty" hidden>
+      <div class="emoji" aria-hidden="true">&#128237;</div>
+      <h3>No tickets match your filters</h3>
+      <p class="muted">Try clearing the filters or searching for something else.</p>
+    </div>
+    <div class="card table-card" id="table-card" hidden>
+      <table class="tickets-table">
+        <thead>
+          <tr>
+            <th>Ticket</th><th>Category</th><th>Location</th><th>Issue</th>
+            <th>Urgency</th><th>Votes</th><th>Status</th><th>Assigned to</th><th>Updated</th>
+          </tr>
+        </thead>
+        <tbody id="tickets-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============ TAB: Verification ============ -->
+  <div id="panel-verify" data-panel="verify" hidden>
+    <div class="panel-intro">
+      <h2>Resolution verification</h2>
+      <p class="muted">Staff have finished these tickets and uploaded an After photo. Compare Before and After, then mark the ticket Resolved or send it back.</p>
+    </div>
+    <div class="loading-row" id="verify-loading"><span class="spinner"></span> Loading&hellip;</div>
+    <div class="card empty-state" id="verify-empty" hidden>
+      <div class="emoji" aria-hidden="true">&#9989;</div>
+      <h3>Nothing waiting for verification</h3>
+      <p class="muted">When staff upload After photos, they will appear here.</p>
+    </div>
+    <div class="verify-grid" id="verify-list"></div>
+  </div>
+
+  <!-- ============ TAB: Manage Staff ============ -->
+  <div id="panel-staff" data-panel="staff" hidden>
+    <div class="panel-intro">
+      <h2>Manage staff</h2>
+      <p class="muted">Staff sign in at <strong>/staff/login</strong> and only see the tickets you assign to them.</p>
+    </div>
     <div class="card">
-      <div class="card-title">Category breakdown</div>
-      <div id="cat-bars" class="bars"></div>
-      <div class="urg-summary" id="urg-summary"></div>
+      <div class="card-title">Add a staff member</div>
+      <div class="alert alert-error" id="staff-form-error" role="alert" hidden></div>
+      <form id="staff-form" novalidate>
+        <div class="row">
+          <div class="field">
+            <label class="label" for="s-name">Full name</label>
+            <input class="input" id="s-name" type="text" maxlength="60" autocomplete="off" required>
+          </div>
+          <div class="field">
+            <label class="label" for="s-login">Login ID or email</label>
+            <input class="input" id="s-login" type="text" maxlength="60" autocomplete="off" required>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label class="label" for="s-pass">Password</label>
+            <input class="input" id="s-pass" type="text" minlength="6" maxlength="64" autocomplete="off" required>
+            <div class="hint">At least 6 characters. Share it with the staff member.</div>
+          </div>
+          <div class="field">
+            <label class="label" for="s-dept">Department / specialty</label>
+            <input class="input" id="s-dept" type="text" maxlength="40" list="dept-list" autocomplete="off" required>
+            <datalist id="dept-list"></datalist>
+          </div>
+        </div>
+        <button class="btn btn-primary" type="submit" id="s-add">Add staff member</button>
+      </form>
     </div>
-    <div class="card">
-      <div class="card-title">Recurring locations</div>
-      <ol class="hotspot-list" id="hotspots"></ol>
+
+    <div class="card table-card mt-2">
+      <table class="tickets-table staff-table">
+        <thead>
+          <tr><th>Name</th><th>Login ID</th><th>Department</th><th>Open tasks</th><th>Completed</th><th></th></tr>
+        </thead>
+        <tbody id="staff-body"></tbody>
+      </table>
+      <div class="empty-state" id="staff-empty" hidden><p class="muted">No staff members yet. Add the first one above.</p></div>
     </div>
   </div>
 
-  <!-- Filters -->
-  <div class="card filters">
-    <div class="filter-search">
-      <label class="sr-only" for="f-q">Search tickets</label>
-      <input class="input" id="f-q" type="search" placeholder="Search ID, room, description, staff&hellip;" autocomplete="off">
+  <!-- ============ TAB: Chat Moderation ============ -->
+  <div id="panel-chat" data-panel="chat" hidden>
+    <div class="panel-intro">
+      <h2>Chat moderation</h2>
+      <p class="muted">Control the community chat on the home page. You can also ban a student straight from any message in the chat.</p>
     </div>
-    <div class="filter-selects">
-      <label class="sr-only" for="f-status">Status</label>
-      <select class="input" id="f-status"></select>
-      <label class="sr-only" for="f-urgency">Urgency</label>
-      <select class="input" id="f-urgency"></select>
-      <label class="sr-only" for="f-category">Category</label>
-      <select class="input" id="f-category"></select>
+    <div class="card mod-card">
+      <div>
+        <div class="card-title">Chat status</div>
+        <div id="mod-status" class="mod-status">Loading&hellip;</div>
+        <p class="hint">When paused, only admins can send messages. Students and staff see a notice.</p>
+      </div>
+      <button class="btn" type="button" id="mod-pause-btn">Pause chat</button>
     </div>
-    <div class="filter-buttons">
-      <button class="btn btn-sm" type="button" id="crit-btn">Critical Priority</button>
-      <button class="btn btn-sm" type="button" id="clear-btn">Clear</button>
-    </div>
-  </div>
 
-  <!-- Tickets -->
-  <div class="flex-between list-meta">
-    <div class="muted" id="list-count">Loading&hellip;</div>
-  </div>
-  <div class="loading-row" id="tickets-loading"><span class="spinner"></span> Loading tickets&hellip;</div>
-  <div class="card empty-state" id="tickets-empty" hidden>
-    <div class="emoji" aria-hidden="true">&#128237;</div>
-    <h3>No tickets match your filters</h3>
-    <p class="muted">Try clearing the filters or searching for something else.</p>
-  </div>
-  <div class="card table-card" id="table-card" hidden>
-    <table class="tickets-table">
-      <thead>
-        <tr>
-          <th>Ticket</th><th>Category</th><th>Location</th><th>Issue</th>
-          <th>Urgency</th><th>Votes</th><th>Status</th><th>Assigned to</th><th>Updated</th>
-        </tr>
-      </thead>
-      <tbody id="tickets-body"></tbody>
-    </table>
+    <div class="card mt-2">
+      <div class="card-title">Ban a student from chat</div>
+      <div class="alert alert-error" id="ban-error" role="alert" hidden></div>
+      <form id="ban-form" class="ban-form" novalidate>
+        <div class="field">
+          <label class="label" for="ban-roll">Student roll number</label>
+          <input class="input" id="ban-roll" type="text" autocapitalize="characters" autocomplete="off" placeholder="e.g. STU1003" required>
+        </div>
+        <div class="field">
+          <label class="label" for="ban-days">Number of days</label>
+          <input class="input" id="ban-days" type="number" min="1" max="365" value="1" required>
+        </div>
+        <button class="btn btn-danger" type="submit" id="ban-btn">Ban from chat</button>
+      </form>
+    </div>
+
+    <div class="card table-card mt-2">
+      <table class="tickets-table">
+        <thead><tr><th>Student</th><th>Roll no.</th><th>Banned until</th><th></th></tr></thead>
+        <tbody id="ban-body"></tbody>
+      </table>
+      <div class="empty-state" id="ban-empty" hidden><p class="muted">No students are banned right now.</p></div>
+    </div>
   </div>
 </div>
 
@@ -124,9 +233,11 @@
         <div class="detail-item"><dt>Last updated</dt><dd id="d-updated"></dd></div>
       </dl>
       <div class="detail-desc" id="d-desc"></div>
+      <div id="d-compare" class="ticket-compare" hidden></div>
       <div class="ticket-photo" id="d-photo-wrap" hidden>
         <a id="d-photo-link" href="#" target="_blank" rel="noopener"><img id="d-photo" alt="Photo attached to this ticket"></a>
       </div>
+      <div class="alert alert-info mt-2" id="d-verify-hint" hidden>Staff uploaded an After photo for this ticket. Review it in the <strong>Verification</strong> tab.</div>
 
       <div class="card-title mt-3">Manage ticket</div>
       <div class="alert" id="d-msg" role="status" hidden></div>
@@ -141,12 +252,12 @@
         </div>
       </div>
       <div class="field">
-        <label class="label" for="d-assigned">Assign to</label>
+        <label class="label" for="d-assigned">Assign to staff</label>
         <select class="input" id="d-assigned"></select>
       </div>
       <div class="field">
         <label class="label" for="d-note">Note <span class="opt">(optional, added to history)</span></label>
-        <textarea class="input" id="d-note" maxlength="500" rows="3" placeholder="e.g. Network staff dispatched."></textarea>
+        <textarea class="input" id="d-note" maxlength="500" rows="3" placeholder="e.g. Please check this today."></textarea>
       </div>
       <button class="btn btn-primary btn-block" type="button" id="d-save">Save changes</button>
 
@@ -161,4 +272,5 @@
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin_panels.js') }}"></script>
 {% endblock %}

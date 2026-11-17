@@ -161,9 +161,12 @@
         hs.appendChild(li);
       });
 
-      document.querySelectorAll('button.stat-card').forEach(function (b) {
+      document.querySelectorAll('#panel-tickets button.stat-card').forEach(function (b) {
         b.classList.toggle('active', b.getAttribute('data-status') === state.filters.status);
       });
+      var vc = $('verify-count');
+      vc.textContent = String(s.awaiting_verification || 0);
+      vc.hidden = !s.awaiting_verification;
     }
 
     function loadStats() {
@@ -211,6 +214,7 @@
         sel.addEventListener('keydown', function (e) { e.stopPropagation(); });
         sel.addEventListener('change', function () { quickStatus(t, sel); });
         c.appendChild(sel);
+        if (t.awaiting_verification) c.appendChild(el('span', 'badge badge-in-progress proof-badge', 'Proof ready'));
         tr.appendChild(c);
 
         c = td('Assigned to', t.assigned_to ? '' : 'td-muted'); c.textContent = t.assigned_to || 'Unassigned'; tr.appendChild(c);
@@ -276,7 +280,7 @@
       fUrgency.value = state.filters.urgency;
       fCategory.value = state.filters.category;
       critBtn.classList.toggle('active', state.filters.urgency === 'Critical');
-      document.querySelectorAll('button.stat-card').forEach(function (b) {
+      document.querySelectorAll('#panel-tickets button.stat-card').forEach(function (b) {
         b.classList.toggle('active', b.getAttribute('data-status') === state.filters.status);
       });
     }
@@ -301,7 +305,7 @@
       state.filters = { q: '', status: '', urgency: '', category: '' };
       applyFilters();
     });
-    document.querySelectorAll('button.stat-card').forEach(function (b) {
+    document.querySelectorAll('#panel-tickets button.stat-card').forEach(function (b) {
       b.addEventListener('click', function () {
         state.filters.status = b.getAttribute('data-status') || '';
         applyFilters();
@@ -309,12 +313,6 @@
     });
 
     $('refresh-btn').addEventListener('click', function () { refreshAll(); toast('Refreshed'); });
-    $('logout-btn').addEventListener('click', function () {
-      api('/api/admin/logout', { method: 'POST' }, true)
-        .then(function () { window.location.href = '/admin/login'; })
-        .catch(function () { window.location.href = '/admin/login'; });
-    });
-
     /* ---------- drawer ---------- */
     var dMsg = $('d-msg'), dSave = $('d-save');
 
@@ -343,8 +341,14 @@
       $('d-updated').textContent = fmt(t.updated_at);
       $('d-desc').textContent = t.description;
 
+      var cmp = $('d-compare');
+      cmp.innerHTML = '';
+      var cmpNode = window.CFCompare ? window.CFCompare.build(t) : null;
+      if (cmpNode) { cmp.appendChild(cmpNode); cmp.hidden = false; } else { cmp.hidden = true; }
+      $('d-verify-hint').hidden = !t.awaiting_verification;
+
       var wrap = $('d-photo-wrap');
-      if (t.photo_url) {
+      if (t.photo_url && !cmpNode) {
         $('d-photo').src = t.photo_url;
         $('d-photo-link').href = t.photo_url;
         wrap.hidden = false;
@@ -355,7 +359,7 @@
 
       $('d-status').value = t.status;
       $('d-urgency').value = t.urgency;
-      $('d-assigned').value = t.assigned_to || '';
+      $('d-assigned').value = String(t.assigned_staff_id || '');
       $('d-note').value = '';
 
       var hist = $('d-history');
@@ -420,7 +424,7 @@
       var note = $('d-note').value.trim();
       if (status !== t.status) body.status = status;
       if (urgency !== t.urgency) body.urgency = urgency;
-      if (assigned !== (t.assigned_to || '')) body.assigned_to = assigned;
+      if (assigned !== String(t.assigned_staff_id || '')) body.assigned_staff_id = assigned;
       if (note) body.note = note;
       if (!Object.keys(body).length) { showDrawerMsg('No changes to save.', 'info'); return; }
 
@@ -446,17 +450,45 @@
         });
     });
 
+    /* ---------- staff dropdown (value = staff id) ---------- */
+    function setStaffOptions(list) {
+      var sel = $('d-assigned');
+      var keep = sel.value;
+      sel.innerHTML = '';
+      var none = el('option', '', 'Unassigned');
+      none.value = '';
+      sel.appendChild(none);
+      list.forEach(function (m) {
+        var o = el('option', '', m.name + ' (' + m.department + ')');
+        o.value = String(m.id);
+        sel.appendChild(o);
+      });
+      sel.value = keep;
+      if (sel.value !== keep) sel.value = '';
+    }
+
+    /* helpers shared with admin_panels.js */
+    window.CFAdmin = {
+      api: api, el: el, fmt: fmt, slug: slug, toast: toast, jsonBody: jsonBody,
+      refreshAll: refreshAll, setStaffOptions: setStaffOptions, openDrawer: openDrawer
+    };
+
     /* ---------- boot ---------- */
-    api('/api/meta').then(function (r) {
-      if (!r.ok) throw new Error('meta');
-      state.meta = r.data;
+    $('logout-btn-admin').addEventListener('click', function () {
+      api('/api/admin/logout', { method: 'POST' }, true)
+        .then(function () { window.location.href = '/admin/login'; })
+        .catch(function () { window.location.href = '/admin/login'; });
+    });
+
+    Promise.all([api('/api/meta'), api('/api/admin/staff')]).then(function (res) {
+      if (!res[0].ok) throw new Error('meta');
+      state.meta = res[0].data;
       fillSelect(fStatus, state.meta.statuses, 'All statuses');
       fillSelect(fUrgency, state.meta.urgencies, 'All urgencies');
       fillSelect(fCategory, state.meta.categories, 'All categories');
       fillSelect($('d-status'), state.meta.statuses, null);
       fillSelect($('d-urgency'), state.meta.urgencies, null);
-      var assigned = $('d-assigned');
-      fillSelect(assigned, state.meta.staff, 'Unassigned');
+      if (res[1].ok) setStaffOptions(res[1].data.staff);
       return refreshAll();
     }).catch(function (err) {
       loadingEl.hidden = true;

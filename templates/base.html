@@ -15,28 +15,31 @@
   {% set path = request.path %}
   <header class="site-header">
     <div class="container nav-inner">
-      <a class="brand" href="{{ '/' if current_student else '/login' }}" aria-label="CampusFix home">
+      <a class="brand" href="/" aria-label="CampusFix home">
         <img class="brand-logo" src="{{ url_for('static', filename='img/logo.png') }}" alt="" onerror="this.style.display='none'">
         <span>Campus<em>Fix</em></span>
       </a>
+      {% if role %}
       <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
       <ul class="nav-links" id="nav-links">
-        {% if current_student %}
         <li><a href="/" class="{{ 'active' if path == '/' else '' }}">Home</a></li>
+        {% if role == 'student' %}
         <li><a href="/report" class="{{ 'active' if path.startswith('/report') else '' }}">Report</a></li>
         <li><a href="/track" class="{{ 'active' if path.startswith('/track') else '' }}">Track</a></li>
+        {% elif role == 'staff' %}
+        <li><a href="/staff/dashboard" class="{{ 'active' if path.startswith('/staff') else '' }}">My Tasks</a></li>
+        <li><a href="/track" class="{{ 'active' if path.startswith('/track') else '' }}">Track</a></li>
+        {% elif role == 'admin' %}
+        <li><a href="/admin" class="{{ 'active' if path.startswith('/admin') else '' }}">Dashboard</a></li>
+        <li><a href="/track" class="{{ 'active' if path.startswith('/track') else '' }}">Track</a></li>
         {% endif %}
-        <li><a href="/admin" class="{{ 'active' if path.startswith('/admin') else '' }}">Admin</a></li>
-        {% if current_student %}
         <li class="nav-user">
-          <span class="nav-hello">Hi, {{ current_student.name.split(' ')[0] }}</span>
-          <button class="btn btn-sm" type="button" id="student-logout">Logout</button>
+          <span class="nav-hello">Hi, {{ user_name.split(' ')[0] }}</span>
+          {% if role == 'staff' %}<span class="role-tag role-tag-staff">STAFF</span>{% elif role == 'admin' %}<span class="role-tag role-tag-admin">ADMIN</span>{% endif %}
+          <button class="btn btn-sm" type="button" id="logout-btn">Logout</button>
         </li>
-        {% elif not is_admin %}
-        <li><a href="/login" class="{{ 'active' if path.startswith('/login') else '' }}">Login</a></li>
-        <li><a href="/register" class="{{ 'active' if path.startswith('/register') else '' }}">Register</a></li>
-        {% endif %}
       </ul>
+      {% endif %}
     </div>
   </header>
 
@@ -53,12 +56,12 @@
 
   <script>
     (function () {
-      var out = document.getElementById('student-logout');
+      var out = document.getElementById('logout-btn');
       if (out) {
         out.addEventListener('click', function () {
-          fetch('/api/student/logout', { method: 'POST' })
-            .then(function () { window.location.href = '/login'; })
-            .catch(function () { window.location.href = '/login'; });
+          fetch('/api/logout', { method: 'POST' })
+            .then(function () { window.location.href = '/'; })
+            .catch(function () { window.location.href = '/'; });
         });
       }
       var btn = document.getElementById('nav-toggle');
@@ -70,6 +73,7 @@
       });
     })();
   </script>
+  <script src="{{ url_for('static', filename='js/compare.js') }}"></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Staff Login | CampusFix{% endblock %}
+
+{% block content %}
+<div class="container container-narrow">
+  <div class="auth-wrap">
+    <div class="card auth-card">
+      <div class="eyebrow">Staff Portal</div>
+      <h1 class="auth-title">Staff sign in</h1>
+      <div class="gradient-line"></div>
+      <p class="muted">Sign in with the login ID or email your admin gave you to see your assigned tasks.</p>
+
+      <div class="alert alert-error mt-2" id="auth-error" role="alert" hidden></div>
+
+      <form id="staff-login-form" class="mt-2" novalidate>
+        <div class="field">
+          <label class="label" for="login_id">Staff ID or email</label>
+          <input class="input" id="login_id" name="login_id" type="text" autocomplete="username" autocapitalize="off" required>
+        </div>
+        <div class="field">
+          <label class="label" for="password">Password</label>
+          <input class="input" id="password" name="password" type="password" autocomplete="current-password" required>
+        </div>
+        <button class="btn btn-primary btn-block" type="submit" id="auth-btn">Sign in</button>
+      </form>
+
+      <p class="hint center mt-2">Demo staff login: <strong>STAFF101</strong> / <strong>staff123</strong></p>
+      <p class="center mt-1"><a href="/">&larr; Back to start</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/staff.js') }}"></script>
+{% endblock %}

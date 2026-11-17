@@ -10,6 +10,7 @@
   var statusSel = $('feed-status'), categorySel = $('feed-category'), tabs = $('feed-tabs');
 
   var THRESHOLD = 10;
+  var IS_STUDENT = (listEl.getAttribute('data-role') === 'student');
   var state = { mode: 'top', status: 'open', category: '' };
   var cards = {};   // ticket_id -> {ticket, node}
 
@@ -56,7 +57,10 @@
 
     card.appendChild(el('p', 'feed-desc', t.description));
 
-    if (t.photo_url) {
+    var compare = window.CFCompare ? window.CFCompare.build(t) : null;
+    if (compare) {
+      card.appendChild(compare);          // Before | After side by side
+    } else if (t.photo_url) {
       var img = el('img', 'feed-photo');
       img.src = t.photo_url;
       img.alt = 'Photo of the reported issue';
@@ -90,7 +94,10 @@
     btn.setAttribute('aria-pressed', t.upvoted_by_me ? 'true' : 'false');
     btn.setAttribute('aria-label', label + ' ' + t.ticket_id + ' (' + t.upvotes + ' upvotes)');
 
-    if (t.is_mine) {
+    if (!IS_STUDENT) {
+      btn.disabled = true;
+      btn.title = 'Only students can upvote';
+    } else if (t.is_mine) {
       btn.disabled = true;
       btn.title = "You can't upvote your own complaint";
     } else if (t.status === 'Resolved') {

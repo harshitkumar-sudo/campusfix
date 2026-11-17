@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}My Tasks | CampusFix{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">{% endblock %}
+
+{% block content %}
+<div class="container" id="staff-dashboard">
+  <div class="page-head">
+    <div class="eyebrow">Staff Dashboard</div>
+    <div class="flex-between">
+      <h1>My Tasks</h1>
+      <span class="role-tag role-tag-staff" id="staff-dept" hidden></span>
+    </div>
+    <div class="gradient-line"></div>
+    <p>You only see complaints that the admin assigned to you. Start the work, then upload an After photo as proof.</p>
+  </div>
+
+  <div class="alert alert-error" id="staff-error" role="alert" hidden></div>
+
+  <div class="stat-grid staff-stats">
+    <button class="card stat-card active" type="button" data-tab="todo"><span class="stat-label">To start</span><span class="stat-value" id="n-todo">&ndash;</span></button>
+    <button class="card stat-card" type="button" data-tab="progress"><span class="stat-label">In progress</span><span class="stat-value" id="n-progress">&ndash;</span></button>
+    <button class="card stat-card" type="button" data-tab="verify"><span class="stat-label">Awaiting verification</span><span class="stat-value" id="n-verify">&ndash;</span></button>
+    <button class="card stat-card" type="button" data-tab="done"><span class="stat-label">Completed</span><span class="stat-value" id="n-done">&ndash;</span></button>
+  </div>
+
+  <div class="loading-row" id="staff-loading"><span class="spinner"></span> Loading your tasks&hellip;</div>
+  <div class="card empty-state" id="staff-empty" hidden>
+    <div class="emoji" aria-hidden="true">&#9989;</div>
+    <h3 id="staff-empty-title">Nothing here</h3>
+    <p class="muted" id="staff-empty-text"></p>
+  </div>
+  <div class="feed-grid" id="task-list"></div>
+</div>
+<div class="toast-host" id="toast-host" aria-live="polite"></div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/staff.js') }}"></script>
+{% endblock %}

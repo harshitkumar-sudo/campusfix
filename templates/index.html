@@ -1,20 +1,30 @@
 {% extends "base.html" %}
 {% block title %}CampusFix | From Report to Resolution{% endblock %}
 
-{% block scripts %}
-<script src="{{ url_for('static', filename='js/feed.js') }}"></script>
-{% endblock %}
-
 {% block content %}
 <section class="hero">
   <div class="container">
     <div class="eyebrow">Student Experience &amp; Smart Education</div>
     <h1>From Report to <span class="gradient-text">Resolution.</span></h1>
+    {% if role == 'student' %}
     <p class="lead">CampusFix connects students with campus maintenance through one structured, transparent and trackable workflow. No more WhatsApp chats, paper logs or unanswered office visits.</p>
     <div class="hero-actions">
       <a class="btn btn-primary" href="/report">Report an Issue</a>
       <a class="btn" href="/track">Track a Ticket</a>
     </div>
+    {% elif role == 'staff' %}
+    <p class="lead">See what students are reporting, and open your task list to start work and upload proof of every fix.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="/staff/dashboard">Open My Tasks</a>
+      <a class="btn" href="/track">Track a Ticket</a>
+    </div>
+    {% else %}
+    <p class="lead">Monitor every complaint on campus. Open the dashboard to assign staff, verify fixes and manage the community chat.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="/admin">Open Dashboard</a>
+      <a class="btn" href="/track">Track a Ticket</a>
+    </div>
+    {% endif %}
     <span class="ticket-chip">Sample Ticket ID: #CF-1042</span>
   </div>
 </section>
@@ -24,13 +34,13 @@
     <div class="eyebrow">Live from campus</div>
     <h2>Reported Issues</h2>
     <div class="gradient-line"></div>
-    <p class="muted">See what others have reported. Upvote problems that affect you too: an issue with <strong>10 upvotes</strong> automatically becomes <strong>Critical</strong> priority.</p>
+    <p class="muted">See what has been reported and how it is being fixed. Students can upvote problems that affect them too: an issue with <strong>10 upvotes</strong> automatically becomes <strong>Critical</strong> priority.</p>
 
     <div class="feed-controls">
       <div class="tabs" id="feed-tabs" role="group" aria-label="Sort complaints">
         <button class="tab active" type="button" data-mode="top">Most upvoted</button>
         <button class="tab" type="button" data-mode="new">Newest</button>
-        <button class="tab" type="button" data-mode="mine">My complaints</button>
+        {% if role == 'student' %}<button class="tab" type="button" data-mode="mine">My complaints</button>{% endif %}
       </div>
       <div class="feed-filters">
         <label class="sr-only" for="feed-status">Status</label>
@@ -50,9 +60,9 @@
       <div class="emoji" aria-hidden="true">&#128237;</div>
       <h3 id="feed-empty-title">No issues to show</h3>
       <p class="muted" id="feed-empty-text">Be the first to report a problem.</p>
-      <a class="btn btn-primary mt-2" href="/report">Report an Issue</a>
+      {% if role == 'student' %}<a class="btn btn-primary mt-2" href="/report">Report an Issue</a>{% endif %}
     </div>
-    <div class="feed-grid" id="feed-list"></div>
+    <div class="feed-grid" id="feed-list" data-role="{{ role }}"></div>
   </div>
 </section>
 
@@ -65,36 +75,23 @@
       <div class="card step-card">
         <div class="step-num">01</div>
         <h3>Student</h3>
-        <p>Submits a complaint via the simple web portal.</p>
+        <p>Reports the problem with a photo through the web portal.</p>
       </div>
       <div class="card step-card">
         <div class="step-num">02</div>
-        <h3>CampusFix</h3>
-        <p>Generates a unique ticket and routes the data.</p>
+        <h3>Admin</h3>
+        <p>Reviews, prioritizes and assigns it to the right staff member.</p>
       </div>
       <div class="card step-card">
         <div class="step-num">03</div>
-        <h3>Admin Portal</h3>
-        <p>Reviews, prioritizes and assigns tasks.</p>
+        <h3>Staff</h3>
+        <p>Fixes it and uploads an After photo as proof.</p>
       </div>
       <div class="card step-card">
         <div class="step-num">04</div>
         <h3>Resolution</h3>
-        <p>Status is updated to Resolved, live.</p>
+        <p>Admin verifies the proof and marks it Resolved, live.</p>
       </div>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container grid-2">
-    <div class="card">
-      <h3>Student Transparency</h3>
-      <p class="muted">Auto-generated ticket IDs let you track progress in real time, without repeated in-person visits.</p>
-    </div>
-    <div class="card">
-      <h3>Operational Clarity</h3>
-      <p class="muted">Administrators use one dashboard to triage requests, spot recurring defects and coordinate fixes efficiently.</p>
     </div>
   </div>
 </section>
@@ -102,8 +99,8 @@
 <section class="section">
   <div class="container container-narrow">
     <div class="card">
-      <h3>Already reported an issue?</h3>
-      <p class="muted">Enter your ticket ID to see its live status.</p>
+      <h3>Looking for a specific ticket?</h3>
+      <p class="muted">Enter a ticket ID to see its live status.</p>
       <form class="inline-form" action="/track" method="get">
         <label class="sr-only" for="quick-id">Ticket ID</label>
         <input class="input" id="quick-id" name="id" type="text" placeholder="e.g. CF-1042" autocomplete="off" required>
@@ -112,4 +109,39 @@
     </div>
   </div>
 </section>
+
+<!-- Community chat widget -->
+<div id="chat-root" data-role="{{ role }}">
+  <button class="chat-launch" id="chat-launch" type="button" aria-expanded="false" aria-controls="chat-panel">
+    <span aria-hidden="true">&#128172;</span> Community Chat
+    <span class="chat-unread" id="chat-unread" hidden>0</span>
+  </button>
+
+  <section class="chat-panel" id="chat-panel" aria-label="Community chat" hidden>
+    <div class="chat-head">
+      <div>
+        <strong>Campus Community Chat</strong>
+        <div class="chat-sub" id="chat-sub">Students, staff and admins</div>
+      </div>
+      <div class="chat-head-actions">
+        {% if role == 'admin' %}<button class="btn btn-sm" type="button" id="chat-pause">Pause chat</button>{% endif %}
+        <button class="btn btn-sm" type="button" id="chat-close" aria-label="Close chat">&#10005;</button>
+      </div>
+    </div>
+    <div class="chat-notice" id="chat-notice" role="status" hidden></div>
+    <div class="chat-list" id="chat-list" aria-live="polite">
+      <div class="loading-row"><span class="spinner"></span> Loading messages&hellip;</div>
+    </div>
+    <form class="chat-form" id="chat-form" autocomplete="off">
+      <label class="sr-only" for="chat-input">Message</label>
+      <input class="input" id="chat-input" type="text" maxlength="300" placeholder="Type a message&hellip;">
+      <button class="btn btn-primary" type="submit" id="chat-send">Send</button>
+    </form>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/feed.js') }}"></script>
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
 {% endblock %}
